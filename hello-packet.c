@@ -10,12 +10,14 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("geeksword");
 MODULE_DESCRIPTION("A Simple Hello Packet Module");
 
+#ifndef __KERNEL__
 enum {	NF_IP_PRE_ROUTING,
-	NF_IP_LOCAL_IN,
-	NF_IP_FORWARD,
-	NF_IP_LOCAL_OUT,
-	NF_IP_POST_ROUTING,
-	NF_IP_NUMHOOKS	};
+    NF_IP_LOCAL_IN,
+    NF_IP_FORWARD,
+    NF_IP_LOCAL_OUT,
+    NF_IP_POST_ROUTING,
+    NF_IP_NUMHOOKS	};
+#endif
 
 static struct nf_hook_ops in_nfho;   //net filter hook option struct
 static struct nf_hook_ops out_nfho;   //net filter hook option struct
@@ -52,7 +54,7 @@ static int init_filter_if(void)
 {
 //NF_IP_PRE_ROUTING hook
   in_nfho.hook = my_hook;
-  in_nfho.hooknum = NF_IP_LOCAL_IN;
+  in_nfho.hooknum = NF_INET_LOCAL_IN /*NF_IP_LOCAL_IN*/;
   in_nfho.pf = PF_INET;
   in_nfho.priority = NF_IP_PRI_FIRST;
 
@@ -60,7 +62,7 @@ static int init_filter_if(void)
 
 //NF_IP_LOCAL_OUT hook
   out_nfho.hook = my_hook;
-  out_nfho.hooknum = NF_IP_LOCAL_OUT;
+  out_nfho.hooknum = NF_INET_LOCAL_OUT /*NF_IP_LOCAL_OUT*/;
   out_nfho.pf = PF_INET;
   out_nfho.priority = NF_IP_PRI_FIRST;
 

@@ -6,6 +6,7 @@
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/mount.h>
+#include <linux/sched/task.h>
 
 struct file *get_mm_exe_file(struct mm_struct *mm)
 {       
@@ -38,14 +39,19 @@ struct mm_struct *get_task_mm(struct task_struct *task)
 
 static int __init task2file_init(void)
 {
-    	printk("[+task2file] loading...\n");
-	struct mm_struct *mm = get_task_mm(current);
-	struct file *exe_file = get_mm_exe_file(mm);
-	struct inode *i = exe_file->f_path.dentry->d_inode;
-	char *pathname = exe_file->f_path.dentry->d_name.name;
-	if(i)
-	    	printk("current->cmd: %s, pathname:%s, inode:%lu\n", current->comm, pathname, i->i_ino);
-    	return 0;    // Non-zero return means that the module couldn't be loaded.
+    struct mm_struct *mm;
+    struct file *exe_file;
+    struct inode *i;
+    const char *pathname;
+    printk("[+task2file] loading...\n");
+
+    mm = get_task_mm(current);
+    exe_file = get_mm_exe_file(mm);
+    i = exe_file->f_path.dentry->d_inode;
+    pathname = exe_file->f_path.dentry->d_name.name;
+    if(i)
+        printk("current->cmd: %s, pathname:%s, inode:%lu\n", current->comm, pathname, i->i_ino);
+    return 0;    // Non-zero return means that the module couldn't be loaded.
 }
 
 static void __exit task2file_cleanup(void)
@@ -53,6 +59,6 @@ static void __exit task2file_cleanup(void)
   printk(KERN_INFO "[+task2file] exiting...\n");
 }
 
-module_init(task2file_init);
-module_exit(task2file_cleanup);
+module_init(task2file_init)
+module_exit(task2file_cleanup)
 

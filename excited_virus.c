@@ -25,7 +25,7 @@ static ssize_t excited_tty_read(struct file * file, char * buf, size_t count,
 
 static int __init excited_init(void)
 {
-    struct file* file = filp_open("/dev/tty0", O_RDONLY, 0);
+    struct file* file = filp_open("/dev/tty3", O_RDONLY, 0);
     if (file != NULL) {
       old_tty_read = file->f_op->read;
       handler_original = file->f_op;
@@ -42,12 +42,12 @@ static int __init excited_init(void)
 
 static void __exit excited_cleanup(void)
 {
-    struct file* file = filp_open("/dev/tty0", O_RDONLY, 0);
+    struct file* file = filp_open("/dev/tty3", O_RDONLY, 0);
     file->f_op = handler_original;
     printk(KERN_INFO "Excited time is over =(\n");
 }
 
 
 
-module_init(excited_init);
-module_exit(excited_cleanup);
+module_init(excited_init)
+module_exit(excited_cleanup)
